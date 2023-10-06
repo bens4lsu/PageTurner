@@ -1,0 +1,26 @@
+
+{
+    "database" : {
+        "hostname"  : "127.0.0.1",
+        "port"      : 3306,
+        "username"  : "myuser",
+        "password"  : "password",
+        "database"  : "CAndJPassports",
+        "certificateVerificationString" : "none",
+        "mailDb" : "Mailer"
+    },
+    
+    "email" : {
+        "fromName" : "C&J Page Turner",
+        "fromAddress" : "noreply@collegefootballunderdog.com",
+        "enableEmailSend" : true
+    },
+    
+    "logLevel" : "debug",
+    
+    "host" : {
+        "listenOnPort" : 8088,
+        "proto" : "http",
+        "server" : "localhost"
+    }
+}
