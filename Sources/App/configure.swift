@@ -22,7 +22,10 @@ public func configure(_ app: Application) async throws {
 
 
     // register routes
-    try routes(app)
+    //try routes(app)
+    
+    let _ = try await TestController.test(on: app.db)
+    //try await PageController.test(on: app.db)
     
 
     

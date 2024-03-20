@@ -6,13 +6,15 @@
 //
 
 import Foundation
+import CryptoSwift
 
 extension String {
-    func urlToBase64Data() async throws -> String? {
+    func urlToCrc() async throws -> String? {
         if let url = URL(string: self),
             let (data, _) = try? await URLSession.shared.data(from: url)
         {
-            return data.base64EncodedString()
+            let crc = data.base64EncodedString().crc32()
+            return crc
         }
         return nil
     }
