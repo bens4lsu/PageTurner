@@ -14,7 +14,7 @@ let package = Package(
         // 🐬 Fluent driver for MySQL.
         .package(url: "https://github.com/vapor/fluent-mysql-driver.git", from: "4.0.0"),
         .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", .upToNextMajor(from: "1.8.1")),
-
+        .package(url: "https://github.com/m-barthelemy/vapor-queues-fluent-driver.git", from: "3.0.0-beta1"),
     ],
     targets: [
         .executableTarget(
@@ -23,7 +23,8 @@ let package = Package(
                 .product(name: "Fluent", package: "fluent"),
                 .product(name: "FluentMySQLDriver", package: "fluent-mysql-driver"),
                 .product(name: "Vapor", package: "vapor"),
-                .product(name: "CryptoSwift", package: "CryptoSwift")
+                .product(name: "CryptoSwift", package: "CryptoSwift"),
+                .product(name: "QueuesFluentDriver", package: "vapor-queues-fluent-driver"),
             ]
         ),
         .testTarget(name: "AppTests", dependencies: [

@@ -32,6 +32,7 @@ class ConfigurationSettings: Decodable {
         let fromName: String
         let fromAddress: String
         let enableEmailSend: Bool
+        let toAddresses: [String]
     }
     
     let database: ConfigurationSettings.Database

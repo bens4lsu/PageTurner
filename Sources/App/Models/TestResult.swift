@@ -7,11 +7,11 @@
 
 import Foundation
 
-enum TestResult: Int, Codable {
-    case notTested = 999
-    case passed = 0
-    case contentChanged = -1
-    case urlError = -2
+enum TestResult: String, Codable {
+    case notTested = "Not Tested"
+    case passed = "Passed"
+    case contentChanged = "Content Changed"
+    case urlError = "URL Error"
 }
 
 class MailerResult {
@@ -21,5 +21,9 @@ class MailerResult {
     init(result: TestResult, page: Page) {
         self.result = result
         self.page = page
+    }
+    
+    var emailText: String {
+        "Result of \"\(result.rawValue)\" found on \"\(page.pageDescription)\" at url \"\(page.url)\""
     }
 }
