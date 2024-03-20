@@ -6,12 +6,14 @@
 //
 
 import Foundation
+
+enum URLSessionAsyncErrors: Error {
+    case invalidUrlResponse, missingResponseData
+}
+
 public extension URLSession {
     
-    enum URLSessionAsyncErrors: Error {
-        case invalidUrlResponse, missingResponseData
-    }
- 
+
     /// A reimplementation of `URLSession.shared.data(from: url)` required for Linux
     ///
     /// - Parameter url: The URL for which to load data.
