@@ -10,6 +10,7 @@ import Vapor
 import Fluent
 import QueuesFluentDriver
 import Queues
+import CryptoSwift
 
 //extension Sequence {
 //    func asyncMap<T>(
@@ -36,13 +37,13 @@ class TestJob: AsyncScheduledJob {
     }
     
     func run(context: Queues.QueueContext) async throws {
-        let results = try await self.test(on: context.application.db)
-            .filter {$0.result == .contentChanged || $0.result == .urlError}
+        let results = try await self.test(on: context)
+        //    .filter {$0.result == .contentChanged || $0.result == .urlError}
         let _ = try await report(results: results, on: context.application.db(.emailDb))
     }
     
-    private func test(on db: Database) async throws -> [MailerResult] {
-        let pagesToTest = try await Page.query(on: db)
+    private func test(on context: Queues.QueueContext) async throws -> [MailerResult] {
+        let pagesToTest = try await Page.query(on: context.application.db)
             .filter(\.$isCurrent == true)
             .all()
         
@@ -52,9 +53,9 @@ class TestJob: AsyncScheduledJob {
                 
                 if page.crc == nil || page.crc == "" {
                     group.addTask {
-                        page.crc = try await page.url.urlToCrc()
+                        page.crc = try await self.crc(context.application, url: page.url)
                         page.version = page.version + 1
-                        try await page.save(on: db)
+                        try await page.save(on: context.application.db)
                         self.logger.debug("Page \(page.pageDescription)\nURL\(page.url)\nResult = Not Tested\n")
                         return  MailerResult(result: .notTested, page: page)
                     }
@@ -62,7 +63,7 @@ class TestJob: AsyncScheduledJob {
                 
                 else {
                     group.addTask {
-                        guard let currentCrc = try await page.url.urlToCrc() else {
+                        guard let currentCrc = try await self.crc(context.application, url: page.url) else {
                             self.logger.notice("Page \(page.pageDescription)\nURL \(page.url)\nResult = URL Error\n")
                             return MailerResult(result: .urlError, page: page)
                         }
@@ -99,6 +100,25 @@ class TestJob: AsyncScheduledJob {
             }
             try await group.waitForAll()
         }
+    }
+    
+    private func crc(_ app: Application, url: String) async throws -> String? {
+        let eventLoopFuture = app.http.client.shared.get(url: url)
+        var response = try await eventLoopFuture.get()
+        
+        if let bytes = response.body?.readableBytes,
+           let data = response.body?.readData(length: bytes) {
+        
+            let string = String(data: data, encoding: .utf8) ?? ""
+            
+            // have to remove the instance thing from the Q&A, because it's different every time
+            let regexForInstanceOnPassportQA = try Regex("<input type=\"text\" name=\"instance\" id=\"instance\" value=\".+\">")
+            let encoded = string.replacing(regexForInstanceOnPassportQA, with: "").base64String()
+            
+            let crc = encoded.crc32()
+            return crc
+        }
+        return nil
     }
         
 }
