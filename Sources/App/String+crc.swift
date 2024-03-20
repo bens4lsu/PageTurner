@@ -11,7 +11,7 @@ import CryptoSwift
 extension String {
     func urlToCrc() async throws -> String? {
         if let url = URL(string: self),
-            let (data, _) = try? await URLSession.shared.asyncData(from: url)
+           let (data, _) = try? await URLSession(configuration: .default).asyncData(from: url)
         {
             let string = String(data: data, encoding: .utf8) ?? ""
             

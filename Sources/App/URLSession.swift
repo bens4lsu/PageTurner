@@ -11,7 +11,7 @@ enum URLSessionAsyncErrors: Error {
     case invalidUrlResponse, missingResponseData
 }
 
-public extension URLSession {
+extension URLSession {
     
 
     /// A reimplementation of `URLSession.shared.data(from: url)` required for Linux
