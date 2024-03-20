@@ -52,7 +52,13 @@ public func configure(_ app: Application) async throws {
     
     
     let testJob = TestJob(settings: settings, logger: logger)
+    
+    #if DEBUG
     app.queues.schedule(testJob).minutely().at(18)
+    #else
+    app.queues.schedule(testJob).hourly().at(18)
+    #endif
+    
     try app.queues.startScheduledJobs()
 
     // register routes

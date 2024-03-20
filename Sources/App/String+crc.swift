@@ -13,7 +13,13 @@ extension String {
         if let url = URL(string: self),
             let (data, _) = try? await URLSession.shared.data(from: url)
         {
-            let crc = data.base64EncodedString().crc32()
+            let string = String(data: data, encoding: .utf8) ?? ""
+            
+            // have to remove the instance thing from the Q&A, because it's different every time
+            let regexForInstanceOnPassportQA = try Regex("<input type=\"text\" name=\"instance\" id=\"instance\" value=\".+\">")
+            let encoded = string.replacing(regexForInstanceOnPassportQA, with: "").base64String()
+            
+            let crc = encoded.crc32()
             return crc
         }
         return nil
