@@ -38,7 +38,7 @@ class TestJob: AsyncScheduledJob {
     
     func run(context: Queues.QueueContext) async throws {
         let results = try await self.test(on: context)
-        //    .filter {$0.result == .contentChanged || $0.result == .urlError}
+            .filter {$0.result == .contentChanged || $0.result == .urlError}
         let _ = try await report(results: results, on: context.application.db(.emailDb))
     }
     
